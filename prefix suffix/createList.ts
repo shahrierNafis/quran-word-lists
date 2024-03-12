@@ -20,8 +20,6 @@ type List = {
 };
 const data: Data = require("../data.json");
 const list: List = {};
-const dictionary: { [key: string]: string | null } = {};
-const cluster: List = {};
 for (const surah in data) {
   for (const verce in data[surah]) {
     for (const position in data[surah][verce]) {
@@ -33,14 +31,6 @@ for (const surah in data) {
         affixGroup.push(`${surah}:${verce}:${position}`);
         list[string] = affixGroup;
       }
-      // group by lemma
-      const lemmaGroup = cluster[word.lemma ?? "noLemma"] ?? ([] as string[]);
-
-      // add word to the group
-      lemmaGroup.push(`${surah}:${verce}:${position}`);
-      dictionary[`${surah}:${verce}:${position}`] = word.lemma ?? null;
-      // update list
-      cluster[word.lemma ?? "noLemma"] = lemmaGroup;
     }
   }
 }
@@ -53,22 +43,6 @@ fs.writeFile(
   path.join(__dirname, "list.json"),
 
   JSON.stringify(sortedList),
-  function (err) {
-    if (err) throw err;
-    console.log("complete");
-  }
-);
-fs.writeFile(
-  path.join(__dirname, "cluster.json"),
-  JSON.stringify(cluster),
-  function (err) {
-    if (err) throw err;
-    console.log("complete");
-  }
-);
-fs.writeFile(
-  path.join(__dirname, "dictionary.json"),
-  JSON.stringify(dictionary),
   function (err) {
     if (err) throw err;
     console.log("complete");

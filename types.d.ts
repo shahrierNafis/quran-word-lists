@@ -13,3 +13,15 @@ export type Word = {
   prefixes: string[];
   suffixes: string[];
 };
+export type SpellingData = {
+  [key: string]: {
+    [key: string]: {
+      char_type_name: string;
+      text_imlaei: string;
+      text: string;
+      transliteration: {
+        text: string;
+      };
+    }[];
+  };
+};

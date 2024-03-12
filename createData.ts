@@ -21,11 +21,11 @@ for (const surah in wordCount) {
         index++;
         continue;
       }
-
+      const lemma = getLemma(morphology[index]);
       const word = {} as Word;
       word.translation = translation[index];
       word.root = getRoot(morphology[index]);
-      word.lemma = getLemma(morphology[index]);
+      word.lemma = lemma;
       word.position = `${surah}:${verce}:${wordIndex}`;
       word.arPartOfSpeech = getArPos(morphology[index]);
       word.partOfSpeech = getPos(morphology[index]);
@@ -42,6 +42,7 @@ fs.writeFile("data.json", JSON.stringify(data), function (err) {
   if (err) throw err;
   console.log("complete");
 });
+
 // helper functions
 function getRoot(line: string) {
   for (const segment of line.split(" ")) {
@@ -84,7 +85,7 @@ function getArPos(line: string) {
 }
 
 function getPrefixes(line: string) {
-  const prefixes = [];
+  const prefixes: string[] = [];
   for (const segment of line.split(" ")) {
     if (segment.endsWith("+")) {
       prefixes.push(segment);
@@ -93,7 +94,7 @@ function getPrefixes(line: string) {
   return prefixes;
 }
 function getSuffixes(line: string) {
-  const suffixes = [];
+  const suffixes: string[] = [];
   for (const segment of line.split(" ")) {
     if (segment.startsWith("+")) {
       suffixes.push(segment);
