@@ -45,9 +45,20 @@ for (const surah in data) {
   }
 }
 
-const sortedList = Object.values(list).sort((a, b) => {
-  return b.length - a.length;
-});
+const sortedList = Object.values(list)
+  .map((wordGroup) =>
+    wordGroup.sort((indexA, indexB) => {
+      const [surahA, verseA, positionA] = indexA.split(":");
+      const [surahB, verseB, positionB] = indexB.split(":");
+      return (
+        spellingData[surahA][verseA].length -
+        spellingData[surahB][verseB].length
+      );
+    })
+  )
+  .sort((wordGroupA, wordGroupB) => {
+    return wordGroupB.length - wordGroupA.length;
+  });
 // write lists
 fs.writeFile(
   path.join(__dirname, "list.json"),
