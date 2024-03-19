@@ -83,8 +83,10 @@ fs.writeFile(
   }
 );
 function cleanTranslation(string: string) {
-  return string
-    .toLowerCase()
-    .replace(/[.,;\[\]'"`\\]|(\(.*\))|(  )/g, "")
-    .trim();
+  return (
+    string
+      .toLowerCase()
+      // .replace(/[.,;'"`\\]|(  )/g, "")
+      .trim()
+  );
 }
