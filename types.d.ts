@@ -4,14 +4,21 @@ export type WordCount = {
   };
 };
 export type Word = {
-  translation: string;
-  root: string | null;
-  lemma: string | null;
-  arPartOfSpeech: "ḥarf" | "fiʿil" | "ism" | null;
-  partOfSpeech: string | null;
+  translation?: string;
+  root?: string;
+  lemma?: string;
+  arPartOfSpeech?: "ḥarf" | "fiʿil" | "ism";
+  partOfSpeech?: string | null;
   position: string;
-  prefixes: string[];
-  suffixes: string[];
+  prefixes?: string[];
+  suffixes?: string[];
+  aspect?: "PERF" | "IMPF" | "IMPV";
+  mood?: "IND" | "SUBJ" | "JUS";
+  voice?: "ACT" | "PASS";
+  form?: string;
+  derivation?: "ACT PCPL" | "PASS PCPL" | "VN";
+  state?: "DEF" | "INDEF";
+  grammaticalCase?: string;
 };
 export type SpellingData = {
   [key: string]: {
@@ -23,5 +30,13 @@ export type SpellingData = {
         text: string;
       };
     }[];
+  };
+};
+
+export type List = {
+  [key: string]: {
+    positions: string[];
+    description: string;
+    name: string;
   };
 };

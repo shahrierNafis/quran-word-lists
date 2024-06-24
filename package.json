@@ -4,16 +4,20 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "tsx createExtendedData.ts && tsx createData.ts && tsx createSpellingData.ts"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/lodash": "^4.14.202",
     "@types/node": "^20.11.20",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.15.1",
     "typescript": "^5.3.3"
   },
   "dependencies": {
+    "buckwalter-transliteration": "github:aosaimy/buckwalter-transliteration",
     "lodash": "^4.17.21",
     "quran-db": "^1.2.3"
   }
