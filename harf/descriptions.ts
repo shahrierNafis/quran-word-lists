@@ -5,7 +5,7 @@ export const descriptions: { [key: string]: string } = {
   PRP: "Purpose lām prefix",
   CONJ: "Coordinating conjunction",
   SUB: "Subordinating conjunctionA",
-  CC: "Accusative particle",
+  ACC: "Accusative particle",
   AMD: "Amendment particle",
   ANS: "Answer particle",
   AVR: "Aversion particle",

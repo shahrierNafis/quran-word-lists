@@ -3,7 +3,6 @@ import { List, Word, WordCount } from "../types";
 import path from "path";
 import { descriptions } from "./descriptions";
 const wordCount: WordCount = require("../wordCount.json");
-const bt = require("buckwalter-transliteration")("bw2utf");
 
 type Data = {
   [key: string]: {
@@ -21,23 +20,20 @@ type Data = {
 
 const data: Data = require("../data.json");
 const list: List = {};
-
 for (const surah in data) {
   for (const verse in data[surah]) {
     for (const position in data[surah][verse]) {
       const word = data[surah][verse][position] as Word;
-      if (word.arPartOfSpeech == "ḥarf") {
-        if (word.suffixes?.length || word.prefixes?.length) {
-          continue;
-        }
-        const group = list[word.partOfSpeech! + word.lemma] ?? {
-          positions: [],
+      // group by suffix prefix
+      for (const prefix of [...(word.prefixes ?? [])]) {
+        const PrefixGroupName = getPrefixGroupName(prefix);
+        const prefixGroup = list[PrefixGroupName] ?? {
+          positions: [] as string[],
         };
-        group.name = bt(word.lemma) + " " + word.partOfSpeech ?? "";
-        group.description =
-          bt(word.lemma) + ": " + descriptions[word.partOfSpeech ?? ""];
-        group.positions.push(`${surah}:${verse}:${position}`);
-        list[word.partOfSpeech! + word.lemma] = group;
+        prefixGroup.positions.push(`${surah}:${verse}:${position}`);
+        prefixGroup.name = PrefixGroupName;
+        prefixGroup.description = descriptions[PrefixGroupName] ?? prefix;
+        list[PrefixGroupName] = prefixGroup;
       }
     }
   }
@@ -57,7 +53,7 @@ const sortedList = Object.values(list)
   });
 // write lists
 fs.writeFile(
-  path.join(__dirname, "harfList.json"),
+  path.join(__dirname, "prefixList.json"),
 
   JSON.stringify(sortedList),
   function (err) {
@@ -78,3 +74,10 @@ fs.writeFile(
     console.log("complete");
   }
 );
+
+function getPrefixGroupName(prefix: string) {
+  if (prefix.includes(":")) {
+    return prefix.split(":")[0] + "+";
+  }
+  return prefix;
+}
