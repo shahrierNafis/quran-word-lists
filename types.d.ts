@@ -11,7 +11,7 @@ export type Word = {
   partOfSpeech?: string | null;
   position: string;
   prefixes?: string[];
-  suffixes?: string[];
+  suffixes?: { buckWalter: string; PGN: string }[];
   aspect?: "PERF" | "IMPF" | "IMPV";
   mood?: "IND" | "SUBJ" | "JUS";
   voice?: "ACT" | "PASS";

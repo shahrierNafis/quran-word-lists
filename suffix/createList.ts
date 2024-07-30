@@ -1,7 +1,8 @@
 import fs from "fs";
-import { List, Word, WordCount } from "../types";
+import { Word, WordCount } from "../types";
 import path from "path";
 import { descriptions } from "./descriptions";
+import addOptionsAffix from "../lib/addOptionsAffix";
 const wordCount: WordCount = require("../wordCount.json");
 
 type Data = {
@@ -19,20 +20,29 @@ type Data = {
 };
 
 const data: Data = require("../data.json");
-const list: List = {};
+const list: {
+  [key: string]: {
+    positions: string[];
+    description: string;
+    name: string;
+    keys: Set<string>;
+  };
+} = {};
 for (const surah in data) {
   for (const verse in data[surah]) {
     for (const position in data[surah][verse]) {
       const word = data[surah][verse][position] as Word;
       // group by suffix prefix
       for (const suffix of [...(word.suffixes ?? [])]) {
-        const SuffixGroupName = getSuffixGroupName(suffix, word);
+        const SuffixGroupName = getSuffixGroupName(suffix.PGN, word);
         const suffixGroup = list[SuffixGroupName] ?? {
           positions: [] as string[],
+          keys: new Set(),
         };
         suffixGroup.positions.push(`${surah}:${verse}:${position}`);
         suffixGroup.name = SuffixGroupName;
         suffixGroup.description = getDescription(SuffixGroupName) ?? suffix;
+        suffixGroup.keys.add(suffix.PGN);
         list[SuffixGroupName] = suffixGroup;
       }
     }
@@ -55,7 +65,7 @@ const sortedList = Object.values(list)
 fs.writeFile(
   path.join(__dirname, "suffixList.json"),
 
-  JSON.stringify(sortedList),
+  JSON.stringify(addOptionsAffix(sortedList)),
   function (err) {
     if (err) throw err;
     console.log("complete");

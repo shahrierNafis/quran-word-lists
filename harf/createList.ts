@@ -2,19 +2,14 @@ import fs from "fs";
 import { List, Word, WordCount } from "../types";
 import path from "path";
 import { descriptions } from "./descriptions";
+import doesNotHaveSameLemma from "../lib/doesNotHaveSameLemma";
 const wordCount: WordCount = require("../wordCount.json");
 const bt = require("buckwalter-transliteration")("bw2utf");
 
 type Data = {
   [key: string]: {
     [key: string]: {
-      [key: string]: {
-        translation: string;
-        root: string | null;
-        lemma: string | null;
-        partOfSpeech: string;
-        arPartOfSpeech: string;
-      };
+      [key: string]: Word;
     };
   };
 };
@@ -59,7 +54,7 @@ const sortedList = Object.values(list)
 fs.writeFile(
   path.join(__dirname, "harfList.json"),
 
-  JSON.stringify(sortedList),
+  JSON.stringify(addOptions(sortedList)),
   function (err) {
     if (err) throw err;
     console.log("complete");
@@ -78,3 +73,45 @@ fs.writeFile(
     console.log("complete");
   }
 );
+
+function addOptions(
+  list: {
+    positions: string[];
+    description: string;
+    name: string;
+  }[]
+) {
+  return list.map((group) => {
+    const options: string[] = [];
+    const [surah, ayah, kalaam] = group.positions[0].split(":");
+    const dataArray: Word[] = [];
+    for (const chapter in data) {
+      for (const verse in data[chapter]) {
+        for (const position in data[chapter][verse]) {
+          dataArray.push(data[chapter][verse][position]);
+        }
+      }
+    }
+    const ranDataArray = dataArray.sort(() => Math.random() - 0.5);
+    for (const word of ranDataArray) {
+      if (options.length == 3) {
+        break;
+      }
+      if (word.arPartOfSpeech == "ḥarf") {
+        if (doesNotHaveSameLemma([...options, group.positions[0]], word)) {
+          if (word.partOfSpeech != data[surah][ayah][kalaam].partOfSpeech) {
+            if (!(word.suffixes?.length || word.prefixes?.length)) {
+              options.push(word.position);
+            }
+          }
+        }
+      }
+    }
+    return {
+      name: group.name,
+      description: group.description,
+      positions: group.positions,
+      options,
+    };
+  });
+}
