@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { List, Word, WordCount } from "../types";
+import addOptions from "../lib/addOptionsIsm&Fill";
 const wordCount: WordCount = require("../wordCount.json");
 const bt = require("buckwalter-transliteration")("bw2utf");
 
@@ -52,7 +53,7 @@ const sortedList = Object.values(list)
 fs.writeFile(
   path.join(__dirname, "ismList.json"),
 
-  JSON.stringify(sortedList),
+  JSON.stringify(addOptions(sortedList)),
   function (err) {
     if (err) throw err;
     console.log("complete");
