@@ -19,6 +19,7 @@ export type Word = {
   derivation?: "ACT PCPL" | "PASS PCPL" | "VN";
   state?: "DEF" | "INDEF";
   grammaticalCase?: string;
+  PGN?: string;
 };
 export type SpellingData = {
   [key: string]: {

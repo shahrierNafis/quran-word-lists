@@ -4,6 +4,7 @@ import path from "path";
 import { descriptions } from "./descriptions";
 import addOptionsAffix from "../lib/addOptionsAffix";
 const wordCount: WordCount = require("../wordCount.json");
+const bt = require("buckwalter-transliteration")("bw2utf");
 
 type Data = {
   [key: string]: {
@@ -32,6 +33,7 @@ for (const surah in data) {
   for (const verse in data[surah]) {
     for (const position in data[surah][verse]) {
       const word = data[surah][verse][position] as Word;
+
       // group by suffix prefix
       for (const suffix of [...(word.suffixes ?? [])]) {
         const SuffixGroupName = getSuffixGroupName(suffix.PGN, word);
@@ -41,7 +43,8 @@ for (const surah in data) {
         };
         suffixGroup.positions.push(`${surah}:${verse}:${position}`);
         suffixGroup.name = SuffixGroupName;
-        suffixGroup.description = getDescription(SuffixGroupName) ?? suffix;
+        suffixGroup.description =
+          getDescription(SuffixGroupName, word) ?? suffix;
         suffixGroup.keys.add(suffix.PGN);
         list[SuffixGroupName] = suffixGroup;
       }
@@ -84,7 +87,7 @@ fs.writeFile(
     console.log("complete");
   }
 );
-function getDescription(suffix: string) {
+function getDescription(suffix: string, word: Word) {
   let description = descriptions[suffix] ?? "";
   if (suffix.includes("PRON:")) {
     if (suffix.split(":")[1].includes("1")) {
@@ -124,17 +127,26 @@ function getDescription(suffix: string) {
       description += " possessive";
     }
     description += ` pronoun`;
+
+    if (word?.mood == "IND") {
+      description += " attached to a Indicative Imperfect verb";
+    }
   }
   return description;
 }
 function getSuffixGroupName(suffix: string, word: Word) {
+  let name = suffix;
+  // if (word.mood == "IND") {
+  //   name += "-IND";
+  // }
   if (
     suffix
       .split("-")
       .some((segment) => segment === "OBJ" || segment === "POS") &&
     !suffix.endsWith("PRON:1S")
   ) {
-    return "OBJ_POS-" + "PRON:" + suffix.split(":")[1];
+    return "OBJ_POS-" + "PRON:" + name.split(":")[1];
   }
-  return suffix;
+
+  return name;
 }
