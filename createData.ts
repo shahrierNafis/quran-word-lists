@@ -41,8 +41,11 @@ fs.readFileSync("./morphology.txt")
       word.prefixes = prefixes;
     } else if (isSuffix(line)) {
       // set suffix
-      const suffixes = word.suffixes ?? ([] as string[]);
-      suffixes.push(getSuffix(line, word)!);
+      const suffixes = word.suffixes ?? [];
+      suffixes.push({
+        PGN: getSuffix(line, word)!,
+        buckWalter: getBuckWalter(line),
+      });
       word.suffixes = suffixes;
       //
       pronounData[lineSegments[1]] = position + "-" + getSuffix(line, word);
@@ -53,6 +56,7 @@ fs.readFileSync("./morphology.txt")
       word.mood = getMood(line) as "IND" | "SUBJ" | "JUS" | undefined;
       word.voice = getVoice(line);
       word.form = getForm(line);
+      word.PGN = getPGN(line);
     } else if (isIsm(line)) {
       word.arPartOfSpeech = "ism";
       word.derivation = getDerivation(line);
@@ -183,9 +187,16 @@ function getAspect(line: string): "PERF" | "IMPF" | "IMPV" | undefined {
 }
 
 function getMood(line: string) {
-  for (const segment of line.split(/[	 |]/)) {
-    if (["SUBJ", "JUS"].includes(segment)) {
-      return segment;
+  if (isFiil(line)) {
+    if (getAspect(line) == "IMPF") {
+      if (line.includes("MOOD:")) {
+        for (const segment of line.split("MOOD:")) {
+          if (["SUBJ", "JUS"].includes(segment)) {
+            return segment;
+          }
+        }
+      }
+      return "IND";
     }
   }
   return null;
@@ -248,120 +259,27 @@ function getSuffix(line: string, word: Word) {
       if (word.arPartOfSpeech === "ḥarf") {
         return "OBJ-" + segment;
       }
-      {
-        if (
-          [
-            "naA",
-            "ta",
-            "wna",
-            "na'",
-            "wA@",
-            "n~aA",
-            "w^A@",
-            "woA@",
-            "wuA@",
-            "tumo",
-            "Y^",
-            "w",
-            "tumaA",
-            "tu",
-            "wona",
-            "tumu",
-            "tum",
-            "wo",
-            "Ani",
-            "n~a",
-            "tumuw",
-            "na",
-            "t~umo",
-            "taA",
-            "wu,na",
-            "t~a",
-            "'ni",
-            "t~umu",
-            "n~aA^",
-            "t~umuw",
-            ",^A@",
-            "A@",
-            "t~u",
-            "w^",
-            "t~um",
-            "ti",
-            "tun~a",
-            "t~un~a",
-            "y",
-            "taA^",
-            ",A@",
-            "'uw",
-            "n~a'",
-          ].some((r) => line.split(/	/).includes(r))
-        ) {
-          return "SUB-" + segment;
-        }
-        if (
-          [
-            "himo",
-            "hi",
-            "humo",
-            "him",
-            "humu",
-            "kumo",
-            "hu,",
-            "kumu",
-            "haA^",
-            "hu",
-            "hun~a",
-            "niY",
-            "naA^",
-            "hum",
-            "ni",
-            "himu",
-            "A^",
-            "niY^",
-            "hin~a",
-            "himaA^",
-            "niYa",
-            "k~umu",
-            "n~iY",
-            "kumuw",
-            "n~iY^",
-            "kun~a",
-            "h~u",
-            'A"',
-            "niy",
-            "h~un~a",
-            "ni.a",
-            "k~um",
-            "ka",
-            ",hu",
-            "hi.",
-            "kum",
-            "haA",
-            "Y",
-            "humaA",
-            "Ya",
-            "hi.^",
-            "hu,^",
-            "humaA^",
-            "himaA",
-            "ki",
-            "Y'^",
-            "kumaA",
-            "ho",
-            "Yi",
-            "Y'",
-            ".",
-            "kumaA^",
-            "yaho",
-            "A",
-          ].some((r) => line.split(/	/).includes(r))
-        ) {
+      for (const suffix of word.suffixes ?? []) {
+        if (suffix.PGN.includes("PRON:")) {
           return "OBJ-" + segment;
         }
       }
-
-      return segment;
+      if ("PRON:" + word.PGN != segment) {
+        return "OBJ-" + segment;
+      } else {
+        return "SUB-" + segment;
+      }
     }
   }
   return null;
+}
+function getBuckWalter(line: string): string {
+  return line.split(/[	|]/)[1];
+}
+function getPGN(line: string): string | undefined {
+  for (const segment of line.split(/[|]/)) {
+    if (!segment.startsWith("(") && segment.match(/\d+\w+/)) {
+      return segment;
+    }
+  }
 }
