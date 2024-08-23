@@ -2,7 +2,7 @@ import fs from "fs";
 import { Word, WordCount } from "../types";
 import path from "path";
 import { descriptions } from "./descriptions";
-import addOptionsAffix from "../lib/addOptionsAffix";
+import addOptionsAffix from "../lib/addOptionsSuffix";
 const wordCount: WordCount = require("../wordCount.json");
 const bt = require("buckwalter-transliteration")("bw2utf");
 

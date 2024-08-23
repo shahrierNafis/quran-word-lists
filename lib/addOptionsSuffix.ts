@@ -36,7 +36,7 @@ export default function addOptionsAffix(
       }
       if (wordData.lemma == data[surah][ayah][kalaam].lemma) {
         if (!hasCommonAffix(group, wordData)) {
-          if (!hasSameLammaNAffixes(options, wordData)) {
+          if (!hasDuplicateOptions(options, wordData)) {
             options.push(wordData.position);
           }
         }
@@ -51,7 +51,7 @@ export default function addOptionsAffix(
         }
         if (wordData.root == data[surah][ayah][kalaam].root) {
           if (!hasCommonAffix(group, wordData)) {
-            if (!hasSameLammaNAffixes(options, wordData)) {
+            if (!hasDuplicateOptions(options, wordData)) {
               options.push(wordData.position);
             }
           }
@@ -66,7 +66,7 @@ export default function addOptionsAffix(
           }
           if (wordData.partOfSpeech == data[surah][ayah][kalaam].partOfSpeech) {
             if (!hasCommonAffix(group, wordData)) {
-              if (!hasSameLammaNAffixes(options, wordData)) {
+              if (!hasDuplicateOptions(options, wordData)) {
                 options.push(wordData.position);
               }
             }
@@ -79,7 +79,7 @@ export default function addOptionsAffix(
             break;
           }
           if (!hasCommonAffix(group, wordData)) {
-            if (!hasSameLammaNAffixes(options, wordData)) {
+            if (!hasDuplicateOptions(options, wordData)) {
               options.push(wordData.position);
             }
           }
@@ -108,7 +108,7 @@ function hasSameSuffixes(wordData1: Word, wordData2: Word) {
 function hasSamePrefixes(wordData1: Word, wordData2: Word) {
   return wordData1.prefixes?.sort().join() == wordData2.prefixes?.sort().join();
 }
-function hasSameLammaNAffixes(options: string[], wordData: Word) {
+function hasDuplicateOptions(options: string[], wordData: Word) {
   return options.some((option) => {
     const [surah, ayah, kalaam] = option.split(":");
     return (

@@ -267,6 +267,9 @@ function getSuffix(line: string, word: Word) {
       if ("PRON:" + word.PGN != segment) {
         return "OBJ-" + segment;
       } else {
+        if (segment == "PRON:3MS" || segment == "PRON:3FS") {
+          return "OBJ-3MS";
+        }
         return "SUB-" + segment;
       }
     }

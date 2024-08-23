@@ -1,6 +1,6 @@
 export const descriptions: { [key: string]: string } = {
   "Al+": 'prefix (al) ("the")',
-  "bi+": 'prefix (bi) ("by", "with", "in")',
+  "bi+": 'prefix (bi) ("for","by", "with", "in")',
   "ka+": 'prefix (ka) ("like" or "thus")',
   "ta+": 'prefix (ta) ("by Allah")',
   "sa+": `prefix (sa) a future particle	prefixed particle indicating the future("they will")`,
