@@ -128,17 +128,21 @@ function getDescription(suffix: string, word: Word) {
     }
     description += ` pronoun`;
 
-    if (word?.mood == "IND") {
-      description += " attached to a Indicative Imperfect verb";
+    if (word?.aspect && suffix.split("-").some((a) => a.includes("SUB"))) {
+      description +=
+        " attached to a " +
+        (word?.aspect === "PERF"
+          ? "perfect"
+          : word?.aspect === "IMPF"
+          ? "imperfect"
+          : "imperative") +
+        " verb";
     }
   }
   return description;
 }
 function getSuffixGroupName(suffix: string, word: Word) {
   let name = suffix;
-  // if (word.mood == "IND") {
-  //   name += "-IND";
-  // }
   if (
     suffix
       .split("-")
@@ -147,6 +151,8 @@ function getSuffixGroupName(suffix: string, word: Word) {
   ) {
     return "OBJ_POS-" + "PRON:" + name.split(":")[1];
   }
-
+  if (suffix.split("-").some((segment) => segment === "SUB")) {
+    name = name + "-" + word.aspect;
+  }
   return name;
 }
