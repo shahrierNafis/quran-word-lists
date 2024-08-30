@@ -114,7 +114,7 @@ function getDescription(suffix: string, word: Word) {
     if (suffix.split(":")[1].includes("F")) {
       description += " feminine";
     }
-    if (suffix.split("-").some((a) => a.includes("SUB"))) {
+    if (suffix.split("-").some((a) => a.includes("subj"))) {
       description += " subject";
     }
     if (suffix.split("-").some((a) => a == "OBJ")) {
@@ -128,7 +128,7 @@ function getDescription(suffix: string, word: Word) {
     }
     description += ` pronoun`;
 
-    if (word?.aspect && suffix.split("-").some((a) => a.includes("SUB"))) {
+    if (word?.aspect && suffix.split("-").some((a) => a.includes("subj"))) {
       description +=
         " attached to a " +
         (word?.aspect === "PERF"
@@ -151,7 +151,7 @@ function getSuffixGroupName(suffix: string, word: Word) {
   ) {
     return "OBJ_POS-" + "PRON:" + name.split(":")[1];
   }
-  if (suffix.split("-").some((segment) => segment === "SUB")) {
+  if (suffix.split("-").some((segment) => segment === "subj")) {
     name = name + "-" + word.aspect;
   }
   return name;

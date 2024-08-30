@@ -13,7 +13,7 @@ const pronounData: { [key: string]: string } = {};
 fs.readFileSync("./morphology.txt")
   .toString()
   .split("\n")
-  .forEach((line) => {
+  .forEach((line, lineIndex, lineArray) => {
     const lineSegments = line.split("	");
     const position = lineSegments[0].substring(1, lineSegments[0].length - 3);
     if (prevPosition && position !== prevPosition) {
@@ -43,12 +43,13 @@ fs.readFileSync("./morphology.txt")
       // set suffix
       const suffixes = word.suffixes ?? [];
       suffixes.push({
-        PGN: getSuffix(line, word)!,
+        PGN: getSuffix(line, word, lineArray[lineIndex + 1])!,
         buckWalter: getBuckWalter(line),
       });
       word.suffixes = suffixes;
       //
-      pronounData[lineSegments[1]] = position + "-" + getSuffix(line, word);
+      pronounData[lineSegments[1]] =
+        position + "-" + getSuffix(line, word, lineArray[lineIndex + 1]);
     } else if (isFiil(line)) {
       // set part of speech
       word.aspect = getAspect(line);
@@ -248,7 +249,7 @@ function getGrammaticalCase(line: string) {
   }
 }
 
-function getSuffix(line: string, word: Word) {
+function getSuffix(line: string, word: Word, nextLine: string) {
   for (const segment of line.split(/[	 |]/)) {
     if (segment.includes("+")) {
       return segment;
@@ -264,15 +265,195 @@ function getSuffix(line: string, word: Word) {
           return "OBJ-" + segment;
         }
       }
-      if (
-        "PRON:" + word.PGN != segment ||
-        segment == "PRON:3MS" ||
-        segment == "PRON:3FS"
-      ) {
-        return "OBJ-" + segment;
-      } else {
-        return "SUB-" + segment;
+      if (word.aspect == "PERF") {
+        // 1S
+        if (segment == "PRON:1S") {
+          // -tu
+          if (getBuckWalter(line) == "tu") {
+            return "subj-" + segment;
+          }
+        }
+
+        // 1P
+        if (segment == "PRON:1P") {
+          // -naA
+          if (getBuckWalter(line) == "naA") {
+            return "subj-" + segment;
+          }
+        }
+
+        // 2MS
+        if (segment == "PRON:2MS") {
+          // -ta
+          if (getBuckWalter(line) == "ta") {
+            return "subj-" + segment;
+          }
+        }
+
+        // 2FS
+        if (segment == "PRON:2FS") {
+          // -ti
+          if (getBuckWalter(line) == "ti") {
+            return "subj-" + segment;
+          }
+        }
+
+        // 2D
+        if (segment == "PRON:2D") {
+          // -tumaA
+          if (getBuckWalter(line) == "tumaA") {
+            return "subj-" + segment;
+          }
+        }
+
+        // 2MP
+        if (segment == "PRON:2MP") {
+          const lineSegments = nextLine.split("	");
+          const position = lineSegments[0].substring(
+            1,
+            lineSegments[0].length - 3
+          );
+          if (
+            position == word.position &&
+            nextLine.match(/.*PRON:.*/)?.length
+          ) {
+            // -tumuw
+            if (getBuckWalter(line) == "tumuw") {
+              return "subj-" + segment;
+            }
+          } else {
+            // -tum
+            if (getBuckWalter(line) == "tum") {
+              return "subj-" + segment;
+            }
+          }
+        }
+
+        // 2FP
+        if (segment == "PRON:2FP") {
+          // -tunna
+          if (getBuckWalter(line) == "tunna") {
+            return "subj-" + segment;
+          }
+        }
+
+        // 3MD
+        if (segment == "PRON:3MD") {
+          // -A
+          if (getBuckWalter(line) == "A") {
+            return "subj-" + segment;
+          }
+        }
+
+        // 3FD
+        if (segment == "PRON:3FD") {
+          // -taA
+          if (getBuckWalter(line) == "taA") {
+            return "subj-" + segment;
+          }
+        }
+
+        // 3MP
+        if (segment == "PRON:3MP") {
+          // -wA
+          if (["wA", "w"].includes(getBuckWalter(line))) {
+            return "subj-" + segment;
+          }
+        }
+
+        // 3FP
+        if (segment == "PRON:3FP") {
+          // -na
+          if (getBuckWalter(line) == "na") {
+            return "subj-" + segment;
+          }
+        }
       }
+      if (word.aspect === "IMPF") {
+        // 2D, 3D
+        if (["PRON:2D", "PRON:3D"].includes(segment)) {
+          // -A
+          if (["A", "An"].includes(getBuckWalter(line))) {
+            return "subj-" + segment;
+          }
+        }
+
+        // 2MP, 3MP
+        if (["PRON:2MP", "PRON:3MP"].includes(segment)) {
+          // MOOD:IND
+          if (word.mood == "IND") {
+            // -wna
+            if (["wna", "w,na", "w"].includes(getBuckWalter(line))) {
+              return "subj-" + segment;
+            }
+          } // MOOD:JUS
+
+          if (word.mood == "JUS") {
+            if (["wna", "wA@", "w,A@", "w"].includes(getBuckWalter(line))) {
+              return "subj-" + segment;
+            }
+          }
+          // MOOD:SUBJ
+          if ((word.mood = "SUBJ")) {
+            // -wA@
+            if (["wA", "w,A@", "w"].includes(getBuckWalter(line))) {
+              return "subj-" + segment;
+            }
+          }
+        }
+
+        // 3FP
+        if (segment == "PRON:3FP") {
+          // -na
+          if (getBuckWalter(line) == "na") {
+            return "subj-" + segment;
+          }
+        }
+
+        // 2FP
+        if (segment == "PRON:2FP") {
+          // -na
+          if (getBuckWalter(line) == "na") {
+            return "subj-" + segment;
+          }
+        }
+      }
+      if ((word.aspect = "IMPV")) {
+        // 2D
+        if (segment == "PRON:2D") {
+          // -A
+          if (getBuckWalter(line) == "A") {
+            return "subj-" + segment;
+          }
+        }
+
+        // 2FS
+        if (segment == "PRON:2FS") {
+          // -Y
+          if (getBuckWalter(line) == "Y") {
+            return "subj-" + segment;
+          }
+        }
+
+        // 2MP
+        if (segment == "PRON:2MP") {
+          // -wA@
+          if (
+            ["wA@", "w", ",^A@", "'uw", "halum~a"].includes(getBuckWalter(line))
+          ) {
+            return "subj-" + segment;
+          }
+        }
+
+        // 2FP
+        if (segment == "2FP") {
+          // -na
+          if (getBuckWalter(line) == "na") {
+            return "subj-" + segment;
+          }
+        }
+      }
+      return "OBJ-" + segment;
     }
   }
   return null;

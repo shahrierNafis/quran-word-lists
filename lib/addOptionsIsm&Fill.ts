@@ -162,7 +162,7 @@ function hasSameSuffixesNoSub(wordData1: Word, wordData2: Word) {
   return (
     wordData1.suffixes
       ?.map((s) => {
-        if (!s.PGN.startsWith("SUB")) {
+        if (!s.PGN.startsWith("subj")) {
           return s.PGN;
         }
         return "";
@@ -171,7 +171,7 @@ function hasSameSuffixesNoSub(wordData1: Word, wordData2: Word) {
       .join() ==
     wordData2.suffixes
       ?.map((s) => {
-        if (!s.PGN.startsWith("SUB")) {
+        if (!s.PGN.startsWith("subj")) {
           return s.PGN;
         }
         return "";
