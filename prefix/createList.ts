@@ -27,51 +27,50 @@ for (const surah in data) {
       const word = data[surah][verse][position] as Word;
       // group by suffix prefix
       for (const prefix of [...(word.prefixes ?? [])]) {
-        const PrefixGroupName = getPrefixGroupName(prefix);
-        const prefixGroup = list[PrefixGroupName] ?? {
+        const prefixGroup = list[prefix] ?? {
           positions: [] as string[],
           keys: new Set(),
         };
         prefixGroup.positions.push(`${surah}:${verse}:${position}`);
-        prefixGroup.name = PrefixGroupName;
-        prefixGroup.description = descriptions[PrefixGroupName] ?? prefix;
+        prefixGroup.name = prefix;
+        prefixGroup.description = descriptions[prefix] ?? prefix;
         prefixGroup.keys.add(prefix);
-        list[PrefixGroupName] = prefixGroup;
+        list[prefix] = prefixGroup;
       }
       if (word.arPartOfSpeech === "fiʿil") {
         if (word.aspect == "IMPF") {
           if (word.PGN == "1S") {
-            const PrefixGroupName = "1S";
-            const prefixGroup = list[PrefixGroupName] ?? {
+            const prefix = "1S";
+            const prefixGroup = list[prefix] ?? {
               positions: [] as string[],
               keys: new Set(),
             };
             prefixGroup.positions.push(`${surah}:${verse}:${position}`);
-            prefixGroup.name = PrefixGroupName;
+            prefixGroup.name = prefix;
             prefixGroup.description =
               "1st person singular pronoun prefix ا(alif) attached to an imperfect verb";
             prefixGroup.keys.add("1S");
-            list[PrefixGroupName] = prefixGroup;
+            list[prefix] = prefixGroup;
           } else if (word.PGN == "1P") {
-            const PrefixGroupName = "1P";
-            const prefixGroup = list[PrefixGroupName] ?? {
+            const prefix = "1P";
+            const prefixGroup = list[prefix] ?? {
               positions: [] as string[],
               keys: new Set(),
             };
             prefixGroup.positions.push(`${surah}:${verse}:${position}`);
-            prefixGroup.name = PrefixGroupName;
+            prefixGroup.name = prefix;
             prefixGroup.description =
               "1st person plural pronoun prefix نَ(na) attached to an imperfect verb";
             prefixGroup.keys.add("1P");
-            list[PrefixGroupName] = prefixGroup;
+            list[prefix] = prefixGroup;
           } else if (word.PGN?.startsWith("2")) {
-            const PrefixGroupName = "2nd person";
-            const prefixGroup = list[PrefixGroupName] ?? {
+            const prefix = "2nd person";
+            const prefixGroup = list[prefix] ?? {
               positions: [] as string[],
               keys: new Set(),
             };
             prefixGroup.positions.push(`${surah}:${verse}:${position}`);
-            prefixGroup.name = PrefixGroupName;
+            prefixGroup.name = prefix;
             prefixGroup.description =
               "2nd person pronoun prefix تَ(ta) attached to an imperfect verb";
             prefixGroup.keys.add("2MS");
@@ -80,16 +79,16 @@ for (const surah in data) {
             prefixGroup.keys.add("2FS");
             prefixGroup.keys.add("2FD");
             prefixGroup.keys.add("2FP");
-            list[PrefixGroupName] = prefixGroup;
+            list[prefix] = prefixGroup;
           } else if (word.PGN?.startsWith("3")) {
             if (word.PGN == "3FS") {
-              const PrefixGroupName = "3FS";
-              const prefixGroup = list[PrefixGroupName] ?? {
+              const prefix = "3FS";
+              const prefixGroup = list[prefix] ?? {
                 positions: [] as string[],
                 keys: new Set(),
               };
               prefixGroup.positions.push(`${surah}:${verse}:${position}`);
-              prefixGroup.name = PrefixGroupName;
+              prefixGroup.name = prefix;
               prefixGroup.description =
                 "3rd person singular feminine pronoun prefix تَ(ta) attached to an imperfect verb";
               prefixGroup.keys.add("3FS");
@@ -99,15 +98,15 @@ for (const surah in data) {
               prefixGroup.keys.add("2FS");
               prefixGroup.keys.add("2FD");
               prefixGroup.keys.add("2FP");
-              list[PrefixGroupName] = prefixGroup;
+              list[prefix] = prefixGroup;
             } else {
-              const PrefixGroupName = "3rd person";
-              const prefixGroup = list[PrefixGroupName] ?? {
+              const prefix = "3rd person";
+              const prefixGroup = list[prefix] ?? {
                 positions: [] as string[],
                 keys: new Set(),
               };
               prefixGroup.positions.push(`${surah}:${verse}:${position}`);
-              prefixGroup.name = PrefixGroupName;
+              prefixGroup.name = prefix;
               prefixGroup.description =
                 "3rd person pronoun prefix یَ(ya) attached to an imperfect verb";
               prefixGroup.keys.add("3MS");
@@ -116,7 +115,7 @@ for (const surah in data) {
 
               prefixGroup.keys.add("3FD");
               prefixGroup.keys.add("3FP");
-              list[PrefixGroupName] = prefixGroup;
+              list[prefix] = prefixGroup;
             }
           }
         }
@@ -162,12 +161,6 @@ fs.writeFile(
   }
 );
 
-function getPrefixGroupName(prefix: string) {
-  if (prefix.includes(":")) {
-    return prefix.split(":")[0] + "+";
-  }
-  return prefix;
-}
 function addOptionsAffix(
   list: {
     positions: string[];
