@@ -22,9 +22,6 @@ for (const surah in data) {
     for (const position in data[surah][verse]) {
       const word = data[surah][verse][position] as Word;
       if (word.arPartOfSpeech == "ḥarf") {
-        if (word.suffixes?.length || word.prefixes?.length) {
-          continue;
-        }
         const group = list[word.partOfSpeech! + word.lemma] ?? {
           positions: [],
         };
